@@ -14,6 +14,8 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=4310
 ENV HA_ROOT=/data/highlightai
+ENV HUMANGATE_STATE_ROOT=/data/highlightai/services/humangate/state
+ENV HUMANGATE_AUDIT=/data/highlightai/audit/gates.jsonl
 
 RUN mkdir -p /data/highlightai/audit /data/highlightai/artifacts/orchestrator /data/highlightai/artifacts/memory \
   /data/highlightai/services/humangate/state/pending \
