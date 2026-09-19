@@ -1,0 +1,43 @@
+{
+  "id": "73725f57-5faa-4802-9154-35b66a738e96",
+  "gate_id": "73725f57-5faa-4802-9154-35b66a738e96",
+  "bot_id": "agent.humangate",
+  "source_bot": "agent.cleaner",
+  "condition": "pii_detected",
+  "evidence": {
+    "summary": "PII confidence 0.95 on harvester batch-001; record quarantined with redaction placeholders ([EMAIL]/[PHONE],[IPV4]). Needs Human Review — no resolution invented.",
+    "artifact_paths": [
+      "/workspace/highlightai/artifacts/cleaner/quarantine/quarantine.jsonl",
+      "/workspace/highlightai/artifacts/harvester/example.com/batch-001.html"
+    ],
+    "sample": {
+      "id": "ha-e9572b47baa503c3a27872fc",
+      "pii_confidence": 0.95,
+      "redaction_flag": true,
+      "source": "/workspace/highlightai/artifacts/harvester/example.com/batch-001.html"
+    }
+  },
+  "evidence_path": "services/humangate/evidence/73725f57-5faa-4802-9154-35b66a738e96/evidence.json",
+  "opened_at": "2026-09-19T02:47:19Z",
+  "project_id": "highlightai",
+  "task_id": "HA-Cleaner-12h",
+  "required_approvals": 1,
+  "channels": ["ui"],
+  "reminder_interval_minutes": 10,
+  "escalate_after_minutes": 30,
+  "approver_roster": ["TlAB"],
+  "escalation_target": "roster",
+  "approvals": [],
+  "rejections": [],
+  "more_info_requests": [],
+  "status": "pending",
+  "created_at": "2026-09-19T02:49:45.770627+00:00",
+  "updated_at": "2026-09-19T02:50:43.953602+00:00",
+  "scope": "quarantine_only",
+  "w2_non_quarantine": false,
+  "auto_approve": false,
+  "note": "Cleaner quarantine contact fixture — keep W2 on non-quarantine path only; this gate is quarantine-scoped.",
+  "escalation_fallback": "manager",
+  "presented_to": ["TlAB"],
+  "presented_at": "2026-09-19T02:50:43.953602+00:00"
+}
