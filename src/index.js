@@ -6,6 +6,7 @@ const { logSkill } = require('./lib/audit');
 const tasksRouter = require('./routes/tasks');
 const askRouter = require('./routes/ask');
 const spaRouter = require('./routes/spa');
+const humangateRouter = require('./routes/humangate');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4310);
@@ -27,6 +28,14 @@ app.get('/metrics', (_req, res) => {
 app.use('/orchestrator', tasksRouter);
 app.use('/orchestrator', askRouter);
 app.use('/orchestrator', spaRouter);
+app.use('/humangate', humangateRouter);
+
+// Approvals SPA (W4-HUMANGATE)
+const spaDist = path.join(__dirname, '..', 'spa', 'dist');
+app.use('/approvals', express.static(spaDist));
+app.get('/approvals/*', (_req, res) => {
+  res.sendFile(path.join(spaDist, 'index.html'));
+});
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
@@ -36,9 +45,10 @@ app.use((err, _req, res, _next) => {
 });
 
 if (require.main === module) {
-  app.listen(PORT, '127.0.0.1', () => {
-    logSkill('agent.orchestrator', 'server.start', { port: PORT });
-    console.log(`HA orchestrator listening on http://127.0.0.1:${PORT}`);
+  const HOST = process.env.HOST || '0.0.0.0';
+  app.listen(PORT, HOST, () => {
+    logSkill('agent.orchestrator', 'server.start', { port: PORT, host: HOST });
+    console.log(`HA orchestrator listening on http://${HOST}:${PORT}`);
   });
 }
 

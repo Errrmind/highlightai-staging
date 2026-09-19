@@ -1,0 +1,19 @@
+# Railway Nixpacks — services/orchestrator
+providers = ["node"]
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm ci --omit=dev"]
+
+[phases.build]
+cmds = ["mkdir -p data/audit data/artifacts/orchestrator data/artifacts/memory"]
+
+[start]
+cmd = "npm start"
+
+[variables]
+NODE_ENV = "production"
+HOST = "0.0.0.0"
+HA_ROOT = "/app/data"

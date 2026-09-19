@@ -1,3 +1,6 @@
+# Deploy from repo root with service root = services/orchestrator
+# Or set Railway "Root Directory" to services/orchestrator
+
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"

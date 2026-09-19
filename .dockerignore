@@ -1,0 +1,13 @@
+node_modules
+spa/node_modules
+npm-debug.log
+.git
+.gitignore
+*.md
+!README.md
+.env
+.env.*
+data
+coverage
+**/*.test.js
+**/*.test.ts

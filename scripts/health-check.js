@@ -1,13 +1,11 @@
 const http = require('http');
 const port = process.env.PORT || 4310;
-http.get(`http://127.0.0.1:${port}/orchestrator/health`, (res) => {
-  let d = '';
-  res.on('data', (c) => (d += c));
-  res.on('end', () => {
-    console.log(res.statusCode, d);
-    process.exit(res.statusCode === 200 ? 0 : 1);
-  });
-}).on('error', (e) => {
-  console.error(e.message);
+const host = process.env.HEALTH_HOST || '127.0.0.1';
+const req = http.get({ host, port, path: '/health', timeout: 4000 }, (res) => {
+  process.exit(res.statusCode === 200 ? 0 : 1);
+});
+req.on('error', () => process.exit(1));
+req.on('timeout', () => {
+  req.destroy();
   process.exit(1);
 });
