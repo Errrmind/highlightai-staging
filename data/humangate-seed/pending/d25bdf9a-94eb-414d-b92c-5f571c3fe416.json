@@ -1,0 +1,59 @@
+{
+  "id": "d25bdf9a-94eb-414d-b92c-5f571c3fe416",
+  "gate_id": "d25bdf9a-94eb-414d-b92c-5f571c3fe416",
+  "bot_id": "agent.humangate",
+  "source_bot": "agent.filemgr",
+  "condition": "license_ambiguous",
+  "evidence": {
+    "summary": "apiint audit recorded license_ambiguous (unrecognized_license) for github webhook test-gh-gate; bytes still filed",
+    "artifact_paths": [
+      "/workspace/highlightai/artifacts/apiint/audit/apiint.jsonl",
+      "/workspace/highlightai/artifacts/apiint/out/test-gh-1.jsonl",
+      "/workspace/highlightai/artifacts/filemgr/store/highlightai-pending/apiint/audit/apiint.jsonl/1.0.0",
+      "/workspace/highlightai/artifacts/filemgr/store/highlightai-pending/apiint/out/test-gh-1.jsonl/1.0.0"
+    ],
+    "sample": {
+      "type": "gate",
+      "condition": "license_ambiguous",
+      "bot_id": "agent.apiint",
+      "evidence": {
+        "summary": "unrecognized_license",
+        "task_id": "test-gh-gate",
+        "provider": "github",
+        "header": "weird-unknown-license-xyz"
+      },
+      "at": "2026-09-19T02:39:09.801Z"
+    }
+  },
+  "evidence_path": "services/humangate/evidence/d25bdf9a-94eb-414d-b92c-5f571c3fe416/evidence.json",
+  "opened_at": "2026-09-19T02:46:15.554Z",
+  "project_id": "highlightai-pending",
+  "task_id": "CORE-BUILD-V1",
+  "chain_id": "CORE-BUILD-V1",
+  "required_approvals": 1,
+  "channels": ["ui"],
+  "reminder_interval_minutes": 10,
+  "escalate_after_minutes": 30,
+  "approver_roster": ["TlAB"],
+  "escalation_target": "roster",
+  "approvals": [],
+  "rejections": [],
+  "more_info_requests": [],
+  "status": "pending",
+  "created_at": "2026-09-19T02:49:03.704Z",
+  "updated_at": "2026-09-19T02:50:43.953602+00:00",
+  "last_reminder_at": null,
+  "escalated_at": null,
+  "resolved_at": null,
+  "resolve_reason": null,
+  "scope": null,
+  "deploy_ref": null,
+  "rollback_artifact_id": null,
+  "correlation_id": "CORE-BUILD-V1",
+  "resume_payload": null,
+  "aliases": [],
+  "auto_approve": false,
+  "escalation_fallback": "manager",
+  "presented_to": ["TlAB"],
+  "presented_at": "2026-09-19T02:50:43.953602+00:00"
+}
