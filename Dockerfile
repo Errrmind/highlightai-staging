@@ -9,6 +9,7 @@ COPY src ./src
 COPY public ./public
 COPY scripts ./scripts
 COPY spa/dist ./spa/dist
+COPY data/humangate-seed ./data/humangate-seed
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
