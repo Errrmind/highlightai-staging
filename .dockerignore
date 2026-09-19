@@ -7,9 +7,10 @@ npm-debug.log
 !README.md
 .env
 .env.*
-data
-!data/humangate-seed
-!data/humangate-seed/**
 coverage
 **/*.test.js
 **/*.test.ts
+# ignore data except humangate-seed (COPY data/humangate-seed)
+data/**
+!data/humangate-seed/
+!data/humangate-seed/**
