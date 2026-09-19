@@ -128,6 +128,21 @@ router.use((req, res, next) => {
   next();
 });
 
+router.get('/', (_req, res) => {
+  ensure();
+  const pending = listBucket('pending');
+  res.json({
+    service: 'humangate',
+    bot: 'agent.humangate',
+    status: 'ready',
+    mode: process.env.HUMANGATE_URL ? 'proxy' : 'filesystem',
+    pending_count: pending.length,
+    auto_approve: false,
+    sole_approver: 'TlAB',
+    endpoints: ['/humangate/health', '/humangate/gates', '/approvals'],
+  });
+});
+
 router.get('/health', (_req, res) => {
   ensure();
   const pending = listBucket('pending');
