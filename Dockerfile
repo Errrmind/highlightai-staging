@@ -17,6 +17,7 @@ ENV PORT=4310
 ENV HA_ROOT=/data/highlightai
 ENV HUMANGATE_STATE_ROOT=/data/highlightai/services/humangate/state
 ENV HUMANGATE_AUDIT=/data/highlightai/audit/gates.jsonl
+ENV HUMANGATE_SEED_ROOT=/app/data/humangate-seed
 
 RUN mkdir -p /data/highlightai/audit /data/highlightai/artifacts/orchestrator /data/highlightai/artifacts/memory \
   /data/highlightai/services/humangate/state/pending \
