@@ -247,11 +247,17 @@ router.post('/gates/sync', (req, res) => {
     if (!id) continue;
     // do not overwrite non-pending settled gates
     const found = findGate(id);
-    if (found && found.bucket !== 'pending') {
+    const force = Boolean(req.body?.force || req.body?.force_reopen || g.force_reopen);
+    if (found && found.bucket !== 'pending' && !force) {
       upserted.push({ id, skipped: true, bucket: found.bucket });
       continue;
     }
-    const gate = { ...g, id, gate_id: id, status: 'pending', auto_approve: false };
+    if (found && found.bucket !== 'pending' && force) {
+      // vacate settled gate into pending for operator decide
+      try { if (found.file && fs.existsSync(found.file)) fs.unlinkSync(found.file); } catch (_) {}
+    }
+    const status = (force && g.status) ? g.status : (g.status === 'awaiting_operator_decision' ? g.status : 'pending');
+    const gate = { ...g, id, gate_id: id, status, auto_approve: false };
     const dest = path.join(STATE_ROOT, 'pending', `${id}.json`);
     writeJson(dest, gate);
     upserted.push({ id, skipped: false });
@@ -335,5 +341,42 @@ router.post('/gates/:id/more-info', (req, res) => {
 });
 
 
+
+
+router.post('/gates/:id/force_reopen', (req, res) => {
+  ensure();
+  const found = findGate(req.params.id);
+  if (!found) return res.status(404).json({ error: 'gate not found' });
+  const reason =
+    (typeof req.body?.reason === 'string' && req.body.reason.trim()) ||
+    'WAVE1 force_reopen: vacate resolution for operator decide';
+  const targetStatus =
+    (typeof req.body?.status === 'string' && req.body.status.trim()) ||
+    'awaiting_operator_decision';
+  // Never auto-approve. Staging-only admin reopen.
+  const gate = found.gate;
+  const fromBucket = found.bucket;
+  const fromStatus = gate.status;
+  gate.status = targetStatus;
+  gate.reopened_from = fromStatus || fromBucket;
+  gate.reopened_at = new Date().toISOString();
+  gate.reopened_reason = reason;
+  gate.resolved_at = null;
+  gate.resolve_reason = null;
+  gate.auto_approve = false;
+  gate.updated_at = gate.reopened_at;
+  // Keep prior approvals as history but clear active quorum so operator must decide again
+  gate.prior_approvals = Array.isArray(gate.approvals) ? gate.approvals : [];
+  gate.approvals = [];
+  moveTo(found, 'pending', gate);
+  audit('gate.force_reopen', {
+    gate_id: gate.id || gate.gate_id,
+    from_bucket: fromBucket,
+    from_status: fromStatus,
+    to_status: targetStatus,
+    reason,
+  });
+  res.json(gate);
+});
 
 module.exports = router;
