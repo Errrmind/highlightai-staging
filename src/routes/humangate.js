@@ -28,6 +28,40 @@ function ensure() {
   }
 }
 
+
+const SEED_ROOT =
+  process.env.HUMANGATE_SEED_ROOT ||
+  path.resolve(__dirname, '../../data/humangate-seed');
+
+function bootSeedIfEmpty() {
+  ensure();
+  const pendingDir = path.join(STATE_ROOT, 'pending');
+  const existing = fs.existsSync(pendingDir)
+    ? fs.readdirSync(pendingDir).filter((f) => f.endsWith('.json'))
+    : [];
+  if (existing.length > 0) return { seeded: 0, reason: 'already_has_pending' };
+  const seedPending = path.join(SEED_ROOT, 'pending');
+  if (!fs.existsSync(seedPending)) return { seeded: 0, reason: 'no_seed' };
+  let n = 0;
+  for (const f of fs.readdirSync(seedPending).filter((x) => x.endsWith('.json'))) {
+    const src = path.join(seedPending, f);
+    const dest = path.join(pendingDir, f);
+    fs.copyFileSync(src, dest);
+    n += 1;
+  }
+  if (n) audit('gate.seed_boot', { count: n });
+  return { seeded: n };
+}
+
+// seed once at module load (Railway container has empty FS otherwise)
+let _seedResult = null;
+try {
+  _seedResult = bootSeedIfEmpty();
+} catch (e) {
+  _seedResult = { seeded: 0, error: String(e.message || e) };
+}
+
+
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
@@ -155,6 +189,7 @@ router.get('/health', (_req, res) => {
     auto_approve: false,
     sole_approver: 'TlAB',
     live_orch: 'https://orchestrator-production-7346.up.railway.app',
+    seed: _seedResult,
   });
 });
 
@@ -169,6 +204,60 @@ router.get('/gates', (_req, res) => {
     max_pending: 50,
     auto_approve: false,
   });
+});
+
+router.post('/gates', (req, res) => {
+  ensure();
+  const body = req.body || {};
+  const id = body.id || body.gate_id || require('crypto').randomUUID();
+  const gate = {
+    id,
+    gate_id: id,
+    status: 'pending',
+    condition: body.condition,
+    project_id: body.project_id || 'highlightai-pending',
+    task_id: body.task_id || null,
+    required_approvals: body.required_approvals || 1,
+    approvals: [],
+    rejections: [],
+    more_info_requests: [],
+    escalation_target: body.escalation_target || 'roster',
+    approver_roster: body.approver_roster || ['TlAB'],
+    auto_approve: false,
+    evidence: body.evidence || { summary: body.summary || 'synced' },
+    opened_at: body.opened_at || new Date().toISOString(),
+    created_at: new Date().toISOString(),
+    source_bot: body.source_bot || 'agent.humangate',
+    scope: body.scope || null,
+  };
+  if (!gate.condition) return res.status(400).json({ error: 'condition required' });
+  const dest = path.join(STATE_ROOT, 'pending', `${id}.json`);
+  writeJson(dest, gate);
+  audit('gate.created', { gate_id: id, condition: gate.condition, via: 'http' });
+  res.status(201).json(gate);
+});
+
+router.post('/gates/sync', (req, res) => {
+  ensure();
+  const gates = Array.isArray(req.body?.gates) ? req.body.gates : [];
+  if (!gates.length) return res.status(400).json({ error: 'gates[] required' });
+  const upserted = [];
+  for (const g of gates) {
+    const id = g.id || g.gate_id;
+    if (!id) continue;
+    // do not overwrite non-pending settled gates
+    const found = findGate(id);
+    if (found && found.bucket !== 'pending') {
+      upserted.push({ id, skipped: true, bucket: found.bucket });
+      continue;
+    }
+    const gate = { ...g, id, gate_id: id, status: 'pending', auto_approve: false };
+    const dest = path.join(STATE_ROOT, 'pending', `${id}.json`);
+    writeJson(dest, gate);
+    upserted.push({ id, skipped: false });
+    audit('gate.synced', { gate_id: id, condition: gate.condition });
+  }
+  res.json({ upserted, pending_count: listBucket('pending').length });
 });
 
 router.get('/gates/:id', (req, res) => {
@@ -244,5 +333,7 @@ router.post('/gates/:id/more-info', (req, res) => {
   audit('gate.more_info', { gate_id: gate.id || gate.gate_id, approver_id });
   res.json(gate);
 });
+
+
 
 module.exports = router;

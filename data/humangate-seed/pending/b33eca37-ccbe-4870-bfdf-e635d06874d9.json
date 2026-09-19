@@ -1,0 +1,94 @@
+{
+  "id": "b33eca37-ccbe-4870-bfdf-e635d06874d9",
+  "gate_id": "b33eca37-ccbe-4870-bfdf-e635d06874d9",
+  "bot_id": "agent.security",
+  "condition": "license_ambiguous",
+  "evidence": {
+    "summary": "license_ambiguous: 15 finding(s) from ha-security",
+    "artifact_paths": [
+      "/workspace/highlightai/artifacts/security/w2-security-clear.sarif",
+      "/workspace/highlightai/artifacts/security/latest.sarif"
+    ],
+    "sample": {
+      "findings": [
+        {
+          "rule_id": "license/missing",
+          "file": "/workspace/highlightai/services/apiint",
+          "line": 1,
+          "message": "No LICENSE/COPYING file and no SPDX-License-Identifier headers found (license ambiguous)"
+        },
+        {
+          "rule_id": "license/missing",
+          "file": "/workspace/highlightai/services/executor",
+          "line": 1,
+          "message": "No LICENSE/COPYING file and no SPDX-License-Identifier headers found (license ambiguous)"
+        },
+        {
+          "rule_id": "license/missing",
+          "file": "/workspace/highlightai/services/filemgr",
+          "line": 1,
+          "message": "No LICENSE/COPYING file and no SPDX-License-Identifier headers found (license ambiguous)"
+        },
+        {
+          "rule_id": "license/missing",
+          "file": "/workspace/highlightai/services/formatter",
+          "line": 1,
+          "message": "No LICENSE/COPYING file and no SPDX-License-Identifier headers found (license ambiguous)"
+        },
+        {
+          "rule_id": "license/missing",
+          "file": "/workspace/highlightai/services/humangate/src",
+          "line": 1,
+          "message": "No LICENSE/COPYING file and no SPDX-License-Identifier headers found (license ambiguous)"
+        }
+      ],
+      "count": 15
+    }
+  },
+  "evidence_path": "evidence/b33eca37-ccbe-4870-bfdf-e635d06874d9/evidence.json",
+  "opened_at": "2026-09-19T02:46:37Z",
+  "project_id": "highlightai-pending",
+  "task_id": "CORE-BUILD-V1",
+  "chain_id": "CORE-BUILD-V1",
+  "required_approvals": 1,
+  "channels": [
+    "ui"
+  ],
+  "reminder_interval_minutes": 10,
+  "escalate_after_minutes": 30,
+  "approver_roster": [
+    "TlAB"
+  ],
+  "escalation_target": "roster",
+  "approvals": [],
+  "rejections": [],
+  "status": "pending",
+  "created_at": "2026-09-19T02:46:37Z",
+  "updated_at": "2026-09-19T02:50:43.953602+00:00",
+  "last_reminder_at": null,
+  "escalated_at": null,
+  "resolved_at": null,
+  "resolve_reason": "timeout escalate to manager",
+  "resume_payload": {
+    "gate_id": "b33eca37-ccbe-4870-bfdf-e635d06874d9",
+    "decision": "escalated",
+    "reason": "timeout escalate to manager",
+    "approver_ids": [],
+    "approved_at": null,
+    "scope": null,
+    "rollback_artifact_id": null,
+    "correlation_id": "CORE-BUILD-V1",
+    "task_id": "CORE-BUILD-V1",
+    "project_id": "highlightai-pending",
+    "condition": "license_ambiguous",
+    "bot_id": "agent.security"
+  },
+  "restore_note": "Restored to pending after premature escalate (~56s). Real escalate_after=30m. Roster empty → Manager at 30m only.",
+  "triage": {},
+  "escalation_fallback": "manager",
+  "auto_approve": false,
+  "presented_to": [
+    "TlAB"
+  ],
+  "presented_at": "2026-09-19T02:50:43.953602+00:00"
+}
