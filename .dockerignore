@@ -8,6 +8,8 @@ npm-debug.log
 .env
 .env.*
 data
+!data/humangate-seed
+!data/humangate-seed/**
 coverage
 **/*.test.js
 **/*.test.ts
