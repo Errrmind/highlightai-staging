@@ -10,9 +10,11 @@ npm start   # http://127.0.0.1:4310
 
 Key routes: `/orchestrator/health`, `/metrics`, `/orchestrator/ask/stream`, `/orchestrator/auth/session`, task CRUD under `/orchestrator/tasks`.
 
+WAVE2 `/api` surface (GO-LIVE): `/api/status`, `/api/ingest`, `/api/search`, `/api/ask/stream`, `/api/memory/*`, `/api/alerts/*`.
+
 ## Railway deploy (clear-path staging)
 
-Root Directory: `services/orchestrator`
+Root Directory: `services/orchestrator` (or repo root when this tree IS the service).
 
 - **Dockerfile** (default via `railway.toml`) — binds `HOST=0.0.0.0`, honors Railway `PORT`
 - **Nixpacks fallback**: `nixpacks.toml` + `Procfile`
@@ -24,6 +26,7 @@ Root Directory: `services/orchestrator`
 docker build -t ha-orchestrator .
 docker run --rm -p 4310:4310 -e PORT=4310 ha-orchestrator
 curl -s localhost:4310/health
+curl -s localhost:4310/api/status
 ```
 
 Do not enable PII-gated chains (ha-e9572b47 / batch-002/003) on this service.
