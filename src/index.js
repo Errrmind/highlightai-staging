@@ -6,7 +6,12 @@ const { logSkill } = require('./lib/audit');
 const tasksRouter = require('./routes/tasks');
 const askRouter = require('./routes/ask');
 const spaRouter = require('./routes/spa');
+const pipelineRouter = require('./routes/pipeline');
 const humangateRouter = require('./routes/humangate');
+const memoryRouter = require('./routes/memory');
+const alertsRouter = require('./routes/alerts');
+const statusRouter = require('./routes/status');
+const e2eRouter = require('./routes/e2e');
 
 const app = express();
 const PORT = Number(process.env.PORT || 4310);
@@ -28,7 +33,12 @@ app.get('/metrics', (_req, res) => {
 app.use('/orchestrator', tasksRouter);
 app.use('/orchestrator', askRouter);
 app.use('/orchestrator', spaRouter);
+app.use('/orchestrator', pipelineRouter);
 app.use('/humangate', humangateRouter);
+app.use(memoryRouter);
+app.use(alertsRouter);
+app.use(statusRouter);
+app.use(e2eRouter);
 
 // Approvals SPA (W4-HUMANGATE)
 const spaDist = path.join(__dirname, '..', 'spa', 'dist');
