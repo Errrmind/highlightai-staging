@@ -30,7 +30,7 @@ CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "64"))
 RETENTION_DAYS = int(os.getenv("RETENTION_DAYS", "90"))
 
 MEMORY_HOST = os.getenv("MEMORY_HOST", "0.0.0.0")
-MEMORY_PORT = int(os.getenv("MEMORY_PORT", "8080"))
+MEMORY_PORT = int(os.getenv("MEMORY_PORT", os.getenv("PORT", "8092")))
 
 STATUS_MD = MEMORY_ARTIFACTS_DIR / "STATUS.md"
 HEALTH_JSON = MEMORY_ARTIFACTS_DIR / "health.json"

@@ -52,6 +52,11 @@ class Embedder:
             kwargs = {}
             if cache_folder:
                 kwargs["cache_folder"] = cache_folder
+            import os as _os
+
+            rev = _os.getenv("EMBEDDING_REVISION")  # RW-1: pinned model commit (set in Dockerfile)
+            if rev:
+                kwargs["revision"] = rev
             self._st = SentenceTransformer(model_name, **kwargs)
             self.dim = int(self._st.get_embedding_dimension() if hasattr(self._st, "get_embedding_dimension") else self._st.get_sentence_embedding_dimension())
             self.backend = "sentence-transformers"

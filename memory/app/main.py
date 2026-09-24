@@ -109,12 +109,40 @@ async def lifespan(app: FastAPI):
         set_runtime(None)
 
 
+_DEPLOY_MODE = os.getenv("MEMORY_DEPLOY_MODE", "0") == "1"
+_MAX_BODY = int(os.getenv("MEMORY_MAX_BODY_BYTES", str(2 * 1024 * 1024)))
+
 app = FastAPI(
+    # RW-1: no /docs, /redoc, /openapi.json in deploy mode
+    docs_url=None if _DEPLOY_MODE else "/docs",
+    redoc_url=None if _DEPLOY_MODE else "/redoc",
+    openapi_url=None if _DEPLOY_MODE else "/openapi.json",
     title="HighlightAI Memory",
     version=__version__,
     description="WAVE1-1.2 local numpy memmap + SQLite graph memory service",
     lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def _limit_body(request, call_next):
+    """RW-1: cap request bodies (Content-Length and streamed)."""
+    from fastapi.responses import JSONResponse
+
+    cl = request.headers.get("content-length")
+    if cl is not None:
+        try:
+            if int(cl) > _MAX_BODY:
+                return JSONResponse({"detail": "body_too_large"}, status_code=413)
+        except ValueError:
+            return JSONResponse({"detail": "bad_content_length"}, status_code=400)
+    elif request.method in ("POST", "PUT", "PATCH"):
+        body = await request.body()
+        if len(body) > _MAX_BODY:
+            return JSONResponse({"detail": "body_too_large"}, status_code=413)
+    return await call_next(request)
+
+
 app.include_router(router)
 app.include_router(v1_router)
 
@@ -126,7 +154,7 @@ def root() -> dict:
         "version": __version__,
         "mode": "numpy+sqlite",
         "project_id": config.PROJECT_ID,
-        "docs": "/docs",
+        "docs": None if _DEPLOY_MODE else "/docs",
         "health": "/memory/health",
         "port": config.MEMORY_PORT,
     }
